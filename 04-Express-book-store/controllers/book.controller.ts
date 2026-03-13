@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import { books } from '../models/book.js'
+import { books } from '../models/book.model.js'
 
 //Interfaces
 interface BookBody {
