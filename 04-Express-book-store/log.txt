@@ -35,3 +35,13 @@
 [7/4/2026, 12:58:00 pm] - GET - /books/1
 [7/4/2026, 1:03:09 pm] - POST - /books/
 [7/4/2026, 1:03:18 pm] - GET - /books/
+[28/4/2026, 11:52:39 am] - GET - /books
+[28/4/2026, 11:52:40 am] - GET - /favicon.ico
+[28/4/2026, 11:52:57 am] - GET - /books
+[28/4/2026, 12:11:34 pm] - GET - /books/c89cebae-c352-4d6b-8dda-711f018fd93b
+[28/4/2026, 12:12:56 pm] - GET - /books/
+[28/4/2026, 12:13:06 pm] - GET - /books/c89cebae-c352-4d6b-8dda-711f018fd93b
+[28/4/2026, 12:13:30 pm] - GET - /books/:c89cebae-c352-4d6b-8dda-711f018fd93b
+[28/4/2026, 12:14:56 pm] - GET - /books
+[28/4/2026, 12:15:07 pm] - GET - /books/c89cebae-c352-4d6b-8dda-711f018fd93b
+[28/4/2026, 12:17:01 pm] - GET - /books/c89cebae-c352-4d6b-8dda-711f018fd93b
