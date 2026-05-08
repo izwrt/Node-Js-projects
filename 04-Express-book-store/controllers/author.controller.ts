@@ -1,8 +1,8 @@
-import type{Request, Response} from 'express';
 import 'dotenv/config';
+import { eq, sql } from 'drizzle-orm';
+import type { Request, Response } from 'express';
 import db from '../db/index.js';
 import { authorTable } from '../drizzle/schema.js';
-import { eq } from 'drizzle-orm';
 
 type AuthorDetails = {
     firstName: string,
@@ -10,8 +10,13 @@ type AuthorDetails = {
     email: string,
 }
 
-export const getAllAuthors = async(req: Request, res: Response) => {
+export const getAllAuthors = async(req: Request<{search: string}>, res: Response) => {
     try{
+    const search = req.params.search;
+    if(search){
+        const [result] = await db.select().from(authorTable).where(sql`to_tsvector('english', ${authorTable.firstName}) @@ to_tsquery('english', ${search})`);
+    }
+
     const Authors = await db.select().from(authorTable);
 
     return res.status(200).json(Authors);
@@ -25,14 +30,25 @@ export const getAllAuthors = async(req: Request, res: Response) => {
 export const getAutherById = async(req: Request<{id: string}>, res: Response) => {
     const id = req.params.id;
     
+    // 400 Bad Request - The user messed up
+    if(!id) return res.status(400).json({ error: "id is required" });
+
+    // Optional: Is it a valid UUID format?
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(id)) {
+        return res.status(400).json({ error: "Invalid ID format. Must be a valid UUID." });
+    }
+
     try{
         const [Author] = await db
         .select()
         .from(authorTable)
         .where(eq(authorTable.id, id));
 
-        if(!Author) return res.status(400).json({error: "Author not found"});
+        // 404 Not Found - The database is empty for this valid request
+        if(!Author) return res.status(404).json({error: "Author not found"});
 
+        // 200 OK - Success
         return res.status(200).json(Author);
     }catch (err){
         console.error("Error on fetching Author for: getAutherById", err);

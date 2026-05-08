@@ -14,7 +14,9 @@ export const authorTable = pgTable("author", {
   firstName: varchar({ length: 55 }).notNull(),
   lastName: varchar({ length: 55 }).notNull(),
   email: varchar({ length: 255 }).unique().notNull(),
-});
+}, (table) => ({
+  searchIndexOnFistName: index("index_first_name_idx").using('gin', sql`to_tsvctor('english', ${table.firstName})`)
+}));
 
 export const booksTable = pgTable("books", {
   id: uuid().primaryKey().defaultRandom(),
