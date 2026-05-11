@@ -26,4 +26,3 @@ export const booksTable = pgTable("books", {
 }, (table) => ({
   searchIndexOnTitle: index("books_title_idx").using('gin', sql`to_tsvector('english', ${table.title})`),
 }));
-

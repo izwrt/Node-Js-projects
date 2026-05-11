@@ -1,9 +1,8 @@
 import "dotenv/config";
-import { eq, ilike } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import type { Request, Response } from "express";
 import db from "../db/index.js";
-import { booksTable } from "../drizzle/schema.js";
-import { sql } from "drizzle-orm";
+import { authorTable, booksTable } from "../drizzle/schema.js";
 
 type CreateBookBody = {
   title: string;
@@ -39,7 +38,7 @@ export const getBookById = async (req: Request<{ id: string }>, res: Response) =
     const id = req.params.id;
     if (!id) return res.status(400).json({ error: "id is required" });
 
-    const [book] = await db.select().from(booksTable).where(eq(booksTable.id, id)).limit(1);
+    const [book] = await db.select().from(booksTable).leftJoin(authorTable, eq(booksTable.authorId, authorTable.id)).where(eq(booksTable.id, id)).limit(1);
     if (!book) return res.status(404).json({ error: "Book not found" });
     return res.status(200).json(book);
   } catch (error) {
