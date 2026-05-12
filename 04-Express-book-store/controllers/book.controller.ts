@@ -34,11 +34,12 @@ export const getBooks = async (req: Request, res: Response) => {
 
 export const getBookById = async (req: Request<{ id: string }>, res: Response) => {
   try {
-    // booksTable.id is UUID (string), so req.params.id should be used as a string.
     const id = req.params.id;
     if (!id) return res.status(400).json({ error: "id is required" });
 
+    // Using leftJoin to grab the book AND its related author details in one efficient query
     const [book] = await db.select().from(booksTable).leftJoin(authorTable, eq(booksTable.authorId, authorTable.id)).where(eq(booksTable.id, id)).limit(1);
+    
     if (!book) return res.status(404).json({ error: "Book not found" });
     return res.status(200).json(book);
   } catch (error) {
@@ -55,6 +56,8 @@ export const postBook = async (req: Request<CreateBookBody>, res:Response) => {
   } 
 
   try{
+    // We use .returning() to get the generated UUID back from the database
+    // Drizzle returning() always returns an array, so we destructure the first item: [result]
     const [result] = await db.insert(booksTable).values({ title, authorId, description }).returning({ id: booksTable.id });
 
     if (!result) return res.status(500).json({ error: "Insert failed" });
